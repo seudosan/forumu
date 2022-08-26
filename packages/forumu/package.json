@@ -1,0 +1,38 @@
+{
+  "name": "forumu",
+  "version": "0.0.0",
+  "description": "React hook and component to handle forms ",
+  "keywords": [
+    "react",
+    "forms",
+    "inputs",
+    "validation",
+    "filter"
+  ],
+  "author": "Marco A. Miranda S. <marco2015.sandoval@gmail.com>",
+  "homepage": "https://github.com/seudosan/forumu#readme",
+  "license": "ISC",
+  "main": "lib/forumu.js",
+  "typings": "lib/forumu.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seudosan/forumu.git"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "test": "node ./__tests__/forumu.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/seudosan/forumu/issues"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+}
