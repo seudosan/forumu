@@ -90,24 +90,28 @@ export const useForumu: Forumu = ({
     }
 
     if (filter) {
-      //  
+      //
       //    Execute filter function and validate the returned value:
       //    - If the return of filter is "Boolean" with "false" value, the
-       //   fields will not be updated. If it is "true", the flow will be normal.
-        //  - If is it another type, then the current value will be replaced by
-        //  the returned value.
-      
-      const result = filter({
-        field: name,
-        value,
-      }, event)
+      //   fields will not be updated. If it is "true", the flow will be normal.
+      //  - If is it another type, then the current value will be replaced by
+      //  the returned value.
+
+      const result = filter(
+        {
+          field: name,
+          value,
+        },
+        event,
+      );
 
       if (result) {
-        if (typeof result === 'boolean' && !result) {
-           return
+        if (typeof result === "boolean" && !result) {
+          return;
         }
 
-        value = result
+        value = result;
+      }
     }
 
     removeTouched(name);

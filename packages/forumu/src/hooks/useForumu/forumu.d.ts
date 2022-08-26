@@ -3,6 +3,7 @@ import { boolean } from "yup";
 
 export type ForumuEventSubmit<T> = (values: T, event: FormEvent<HTMLFormElement>) => void;
 export type ForumuEventChange<T> = (values: T, event: ChangeEvent<HTMLFormElement>) => void;
+/* export type ForumuFilter = (values: T, event: ChangeEvent<HTMLFormElement>) => any; */
 export type ForumuValidator<T> = (values: T) => ForumuErrors<T>;
 export type ForumuEventError<T> = (errors: ForumuErrors<T>, values: T) => void;
 export type ForumuErrors<T> = Partial<Record<keyof T, string>>;
@@ -16,6 +17,7 @@ interface ForumuConfig<T> {
   onChange?: ForumuEventChange<T>;
   onSubmitError?: ForumuEventError<T>;
   validator?: ForumuValidator<T>;
+  filter?: any;
   touchedOnly?: boolean;
   preventError?: boolean;
   discriminate?: boolean;

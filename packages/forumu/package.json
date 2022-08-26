@@ -1,5 +1,5 @@
 {
-  "name": "forumu",
+  "name": "@sutiles/forumu",
   "version": "0.0.0",
   "description": "React hook and component to handle forms ",
   "keywords": [
@@ -34,5 +34,8 @@
   },
   "peerDependencies": {
     "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17"
   }
 }
