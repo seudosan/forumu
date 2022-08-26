@@ -12,7 +12,10 @@ export default defineConfig({
   publicDir,
   plugins: [react()],
   resolve: {
-    alias: [{ find: "@", replacement: root }],
+    alias: [
+      { find: "@", replacement: root },
+      { find: "@/components", replacement: resolve(root, "components") },
+    ],
   },
   build: {
     outDir,

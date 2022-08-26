@@ -18,10 +18,10 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
+      "@/*": ["./src/*"]
+      /* "@/components/*": ["./src/components/*"],
       "@/styles/*": ["./src/styles/*"],
-      "@/assets/*": ["./src/assets/*"]
+      "@/assets/*": ["./src/assets/*"] */
     }
   },
   "include": ["src/**/*", "App.tsx"],
