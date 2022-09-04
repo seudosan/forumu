@@ -5,6 +5,9 @@
     "packages/*",
     "apps/*"
   ],
+  "scripts": {
+    "publish": "lerna run build && lerna publish"
+  },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
     "@types/node": "^18.7.8",

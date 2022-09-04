@@ -1,6 +1,6 @@
-import { FunctionComponent, HTMLAttributes, ReactNode } from "react";
+import { FunctionComponent, InputHTMLAttributes, ReactNode } from "react";
 
-interface Input extends HTMLAttributes<HTMLInputElement> {
+interface Input extends InputHTMLAttributes<HTMLInputElement> {
   label: ReactNode;
   helper?: ReactNode;
   error?: boolean;

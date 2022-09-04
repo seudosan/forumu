@@ -9,11 +9,13 @@
     "validation",
     "filter"
   ],
+  "type": "module",
   "author": "Marco A. Miranda S. <marco2015.sandoval@gmail.com>",
   "homepage": "https://github.com/seudosan/forumu#readme",
   "license": "ISC",
-  "main": "lib/forumu.js",
-  "typings": "lib/forumu.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "typings": "lib/index.d.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -21,12 +23,16 @@
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seudosan/forumu.git"
   },
   "scripts": {
-    "tsc": "tsc",
+    "build": "microbundle src/index.ts",
+    "publish": "npm run build && lerna publish",
     "test": "node ./__tests__/forumu.test.js"
   },
   "bugs": {
@@ -36,6 +42,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.17"
+    "@types/react": "^18.0.17",
+    "microbundle": "^0.15.1"
   }
 }

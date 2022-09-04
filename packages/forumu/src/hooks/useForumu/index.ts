@@ -1,7 +1,9 @@
-import { useState, useEffect, FormEventHandler, FormEvent, ChangeEvent, FocusEventHandler, FocusEvent } from "react";
-import { Forumu, ForumuErrors, ForumuTouched } from "./forumu";
+import { useState, useEffect, FormEventHandler, FormEvent, FocusEventHandler, FocusEvent, ChangeEventHandler } from "react";
+import { IForumu } from "../../types";
 
-export const useForumu: Forumu = ({
+type IForumu = <T>(config: IForumu.Config<T>) => IForumu.Properties<T>;
+
+export const useForumu: IForumu = ({
   initValues,
   onSubmit,
   onChange,
@@ -12,14 +14,16 @@ export const useForumu: Forumu = ({
   preventError = true,
   discriminate = true,
 }) => {
+  // Types
+  type FieldsType = typeof initValues;
+  type ErrorsType = IForumu.Errors<FieldsType>;
+
   /* States */
-  const [fields, setFields] = useState(initValues);
-  const [errors, setErrors] = useState<ForumuErrors<typeof initValues>>({});
-  const [touched, setTouched] = useState<ForumuTouched<typeof initValues>>({});
+  const [fields, setFields] = useState<FieldsType>(initValues || ({} as FieldsType));
+  const [errors, setErrors] = useState<ErrorsType>({});
+  const [touched, setTouched] = useState<IForumu.Touched<FieldsType>>({});
 
-  const addTouched: FocusEventHandler<HTMLFormElement> = ({ target }: FocusEvent<HTMLFormElement>) => {
-    const name = target.name;
-
+  const addTouched = (name: keyof typeof touched) => {
     !touched[name] &&
       setTouched({
         ...touched,
@@ -28,22 +32,56 @@ export const useForumu: Forumu = ({
   };
 
   const removeTouched = (name: string) => {
-    touched[name] &&
+    touched[name as keyof FieldsType] &&
       setTouched({
         ...touched,
         [name]: false,
       });
   };
 
+  const resetForm: IForumu.Reset<typeof fields> = (key) => {
+    if (!key) {
+      setFields(initValues);
+      setTouched({});
+      setErrors({});
+    } else if (typeof key === "string") {
+      removeTouched(key);
+
+      setFields({
+        ...fields,
+        [key]: initValues[key as keyof FieldsType],
+      });
+
+      setErrors({
+        ...errors,
+        [key]: undefined,
+      });
+    } else if (Array.isArray(key)) {
+      const newFields = { ...fields };
+      const newErrors = { ...errors };
+      const newTouched = { ...touched };
+
+      key.forEach((key) => {
+        newFields[key] = initValues[key];
+        newErrors[key] = undefined;
+        newTouched[key] = false;
+      });
+
+      setFields(newFields);
+      setErrors(newErrors);
+      setTouched(newTouched);
+    }
+  };
+
   const validateFields = () => {
     if (validator) {
-      let errors = validator(fields);
+      let errors: ErrorsType = {};
+      validator(fields, errors);
 
       if (touchedOnly) {
-        const touchedErrors: ForumuErrors<typeof initValues> = {};
-        type ErrorsKeys = keyof typeof initValues;
+        const touchedErrors: ErrorsType = {};
 
-        (Object.keys(touched) as Array<ErrorsKeys>).forEach((name) => errors[name] && (touchedErrors[name] = errors[name]));
+        Object.keys(touched).forEach((key) => errors[key as keyof ErrorsType] && (touchedErrors[key as keyof ErrorsType] = errors[key as keyof ErrorsType]));
 
         errors = touchedErrors;
       }
@@ -58,13 +96,24 @@ export const useForumu: Forumu = ({
 
     /* Validate fields using validator callback */
     if (preventError && validator) {
-      const errors = await validator(fields);
+      const errors: ErrorsType = {};
+      validator(fields, errors);
 
       /* Check if any key contain an error */
-      const anError = Object.keys(errors).find((name) => Boolean(errors[name]));
+      let touchedErrors: null | Record<string, boolean> = null;
+      Object.keys(errors).forEach((key) => {
+        if (touchedErrors) {
+          touchedErrors[key] = true;
+        } else {
+          touchedErrors = {
+            [key]: true,
+          };
+        }
+      });
 
-      if (anError) {
+      if (touchedErrors) {
         onSubmitError && onSubmitError(errors, fields);
+        setTouched(touchedErrors);
         return setErrors(errors);
       }
     }
@@ -73,11 +122,11 @@ export const useForumu: Forumu = ({
     return onSubmit && onSubmit(fields, event);
   };
 
-  const handleChange: FormEventHandler<HTMLFormElement> = (event: ChangeEvent<HTMLFormElement>) => {
-    const target = event.currentTarget;
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const target = event.target;
     const name = target.name;
 
-    let value = target.value;
+    let value = target.value as any;
     if (discriminate) {
       switch (target.type) {
         case "checkbox":
@@ -89,45 +138,25 @@ export const useForumu: Forumu = ({
       }
     }
 
-    if (filter) {
-      //
-      //    Execute filter function and validate the returned value:
-      //    - If the return of filter is "Boolean" with "false" value, the
-      //   fields will not be updated. If it is "true", the flow will be normal.
-      //  - If is it another type, then the current value will be replaced by
-      //  the returned value.
+    const allowEntry = filter ? filter(name, event) : true;
 
-      const result = filter(
-        {
-          field: name,
-          value,
-        },
-        event,
-      );
-
-      if (result) {
-        if (typeof result === "boolean" && !result) {
-          return;
-        }
-
-        value = result;
-      }
+    if (allowEntry) {
+      removeTouched(name);
+      const updatedValues = { ...fields, [name]: value };
+      onChange && onChange(updatedValues, event);
+      setFields(updatedValues);
     }
+  };
 
-    removeTouched(name);
+  const handleReset: FormEventHandler<HTMLFormElement> = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent default action
+    event.preventDefault();
 
-    const updatedValues = { ...fields, [name]: value };
-    /* Future feature:
-        onChange({
-          fieldName: // target.name
-          currValue: // value
-          prevValue: // fields[name]
-        },
-        event // Current Event
-        )
-    */
-    onChange && onChange(updatedValues, event);
-    setFields(updatedValues);
+    resetForm();
+  };
+
+  const handleBlurCapture: FocusEventHandler<HTMLFormElement> = ({ target }: FocusEvent<HTMLFormElement>) => {
+    addTouched(target.name as keyof FieldsType);
   };
 
   useEffect(() => {
@@ -139,14 +168,20 @@ export const useForumu: Forumu = ({
   }, [touched]);
 
   return {
-    values: fields,
+    fields,
+    resetForm: resetForm,
     touched,
     errors,
-    formProps: {
-      noValidate: true,
-      onSubmit: handleSubmit,
-      onChange: handleChange,
-      onBlurCapture: touchedOnly ? addTouched : undefined,
+    props: {
+      form: {
+        noValidate: true,
+        onSubmit: handleSubmit,
+        onReset: handleReset,
+        onBlurCapture: touchedOnly ? handleBlurCapture : undefined,
+      },
+      input: {
+        onChange: handleChange,
+      },
     },
   };
 };

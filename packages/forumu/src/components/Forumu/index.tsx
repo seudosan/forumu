@@ -1,5 +1,5 @@
 import React from "react";
-import { useForumu } from "src/hooks/useForumu";
+import { useForumu } from "../../hooks/useForumu";
 
 /* type IValues = Record<string, string>; */
 
@@ -10,9 +10,9 @@ const initValues = {
   age: 0,
 };
 
-export const index = () => {
-  const { values, formProps, errors, touched } = useForumu({
-    initValues,
+const index = () => {
+  const { fields, props, errors, touched, resetForm } = useForumu({
+    initValues: { name: "", isOld: false },
     discriminate: true,
     onSubmit: (values, event) => {
       console.log(values, event);
@@ -23,17 +23,25 @@ export const index = () => {
     onSubmitError: (errors) => {
       console.log(errors);
     },
-    validator: (values) => {
-      console.log(values);
-
-      return {};
+    validator: (values, errors) => {
+      if (values.isOld) {
+        errors.isOld = "Hello world";
+      }
     },
   });
 
+  fields;
+  touched;
+  errors;
+
+  resetForm("isOld");
+
   return (
-    <form {...formProps}>
-      <input id="email" type="text" value={values.email} />
-      <span>{errors.email && touched.email}</span>
+    <form {...props.form}>
+      <input style={{ color: "asd" }} id="name" type="text" value={fields.name} onChange={() => {}} />
+      <input id="isOld" type="checkbox" checked={fields.isOld} />
+      <input id="email" type="text" value={fields.name} />
+      <span>{errors.name && touched.name}</span>
     </form>
   );
 };

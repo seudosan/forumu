@@ -1,3 +1,2 @@
-type HelloWorld = "Hello World";
-const hello: HelloWorld = "Hello World";
-console.log(hello);
+export * from "./hooks";
+export * from "./types";
