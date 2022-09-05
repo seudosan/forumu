@@ -32,7 +32,6 @@
   },
   "scripts": {
     "build": "microbundle src/index.ts",
-    "publish": "npm run build && lerna publish",
     "test": "node ./__tests__/forumu.test.js"
   },
   "bugs": {
