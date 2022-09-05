@@ -3,8 +3,7 @@
   "private": true,
   "author": "Marco A. Miranda S. <marco2015.sandoval@gmail.com>",
   "workspaces": [
-    "packages/*",
-    "apps/*"
+    "packages/*"
   ],
   "scripts": {
     "publish": "lerna run build && lerna publish --no-private"
