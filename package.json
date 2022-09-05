@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "publish": "lerna run build && lerna publish"
+    "publish": "lerna run build && lerna publish --no-private"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
