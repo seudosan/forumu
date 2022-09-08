@@ -38,10 +38,11 @@
     "url": "https://github.com/seudosan/forumu/issues"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.17",
+    "@types/react": ">=16.8.0",
     "microbundle": "^0.15.1"
-  }
+  },
+  "gitHead": "34d667876fb68a660fb9427f09bcca8f2fa0d164"
 }
