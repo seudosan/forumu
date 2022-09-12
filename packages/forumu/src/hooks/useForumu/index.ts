@@ -3,17 +3,7 @@ import { IForumu } from "../../types";
 
 type IForumu = <T>(config: IForumu.Config<T>) => IForumu.Properties<T>;
 
-export const useForumu: IForumu = ({
-  initValues,
-  onSubmit,
-  onChange,
-  onSubmitError,
-  filter,
-  validator,
-  touchedOnly = true,
-  preventError = true,
-  discriminate = true,
-}) => {
+export const useForumu: IForumu = ({ initValues, onSubmit, onChange, onSubmitError, filter, validator, preventError = true, discriminate = true }) => {
   // Types
   type FieldsType = typeof initValues;
   type ErrorsType = IForumu.Errors<FieldsType>;
@@ -77,15 +67,6 @@ export const useForumu: IForumu = ({
     if (validator) {
       let errors: ErrorsType = {};
       validator(fields, errors);
-
-      if (touchedOnly) {
-        const touchedErrors: ErrorsType = {};
-
-        Object.keys(touched).forEach((key) => errors[key as keyof ErrorsType] && (touchedErrors[key as keyof ErrorsType] = errors[key as keyof ErrorsType]));
-
-        errors = touchedErrors;
-      }
-
       setErrors(errors);
     }
   };
@@ -123,6 +104,7 @@ export const useForumu: IForumu = ({
   };
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    onChange && onChange(event);
     const target = event.target;
     const name = target.name;
 
@@ -138,13 +120,21 @@ export const useForumu: IForumu = ({
       }
     }
 
-    const allowEntry = filter ? filter(name, event) : true;
+    const newFields = { ...fields, [name]: value };
+    const allowEntry = filter
+      ? filter(
+          {
+            name: name as keyof FieldsType,
+            fields: newFields,
+            prevFields: fields,
+          },
+          event,
+        )
+      : true;
 
     if (allowEntry) {
       removeTouched(name);
-      const updatedValues = { ...fields, [name]: value };
-      onChange && onChange(updatedValues, event);
-      setFields(updatedValues);
+      setFields(newFields);
     }
   };
 
@@ -161,11 +151,7 @@ export const useForumu: IForumu = ({
 
   useEffect(() => {
     validateFields();
-  }, [fields]);
-
-  useEffect(() => {
-    validateFields();
-  }, [touched]);
+  }, [fields, touched]);
 
   return {
     fields,
@@ -177,7 +163,7 @@ export const useForumu: IForumu = ({
         noValidate: true,
         onSubmit: handleSubmit,
         onReset: handleReset,
-        onBlurCapture: touchedOnly ? handleBlurCapture : undefined,
+        onBlurCapture: handleBlurCapture,
       },
       input: {
         onChange: handleChange,

@@ -1,6 +1,13 @@
 import { ChangeEvent as ReactChangeEvent, ChangeEventHandler, FocusEventHandler, FormEvent, FormEventHandler } from "react";
 
 export namespace IForumu {
+  // Interfaces
+  export type Filter<T> = {
+    name: keyof T;
+    fields: T;
+    prevFields: T;
+  } & {};
+
   // Values
   export type Fields<T = Record<string, any>> = Readonly<T>;
 
@@ -17,12 +24,12 @@ export namespace IForumu {
   // Callbacks
   export type ValidatorCallback<T> = (fields: T, errors: Errors<T>) => void;
 
-  export type FilterCallback<T> = (key: keyof T | (string & {}), event: ReactChangeEvent<HTMLInputElement>) => boolean;
+  export type FilterCallback<T> = (entry: Filter<T>, event: ReactChangeEvent<HTMLInputElement>) => boolean;
 
   // Events
   export type SubmitEvent<T> = (fields: T, event: FormEvent<HTMLFormElement>) => void;
 
-  export type ChangeEvent<T> = (fields: T, event: ReactChangeEvent<HTMLInputElement>) => void;
+  export type ChangeEvent = (event: ReactChangeEvent<HTMLInputElement>) => void;
 
   export type ErrorEvent<T> = (errors: Errors<T>, fields: T) => void;
 
@@ -30,11 +37,10 @@ export namespace IForumu {
   export interface Config<T> {
     initValues: T;
     onSubmit?: SubmitEvent<T>;
-    onChange?: ChangeEvent<T>;
+    onChange?: ChangeEvent;
     onSubmitError?: ErrorEvent<T>;
     validator?: ValidatorCallback<T>;
     filter?: FilterCallback<T>;
-    touchedOnly?: boolean;
     preventError?: boolean;
     discriminate?: boolean;
   }
