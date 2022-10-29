@@ -1,0 +1,51 @@
+{
+  "name": "@sutiles/react-form-handler",
+  "version": "1.1.0",
+  "description": "React hook and component to handle forms ",
+  "keywords": [
+    "react",
+    "forms",
+    "inputs",
+    "validation",
+    "filter"
+  ],
+  "type": "module",
+  "author": "Marco A. Miranda S. <marco2015.sandoval@gmail.com>",
+  "homepage": "https://github.com/seudosan/forumu#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "typings": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seudosan/forumu.git"
+  },
+  "scripts": {
+    "build": "microbundle src/index.ts",
+    "test": "node ./__tests__/forumu.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/seudosan/forumu/issues"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/react": ">=16.8.0",
+    "microbundle": "^0.15.1"
+  },
+  "gitHead": "34d667876fb68a660fb9427f09bcca8f2fa0d164",
+  "dependencies": {
+    "nested-property": "^4.0.0"
+  }
+}
