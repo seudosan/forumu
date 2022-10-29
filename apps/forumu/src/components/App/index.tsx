@@ -1,5 +1,5 @@
 import { useFormHandler } from "@sutiles/react-form-handler";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Input } from "../Input";
 
 enum Page {
