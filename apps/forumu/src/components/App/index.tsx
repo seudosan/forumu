@@ -1,5 +1,5 @@
-import { useForumu } from "@sutiles/forumu";
-import { useState } from "react";
+import { useFormHandler } from "@sutiles/react-form-handler";
+import { useCallback, useState } from "react";
 import { Input } from "../Input";
 
 enum Page {
@@ -18,7 +18,14 @@ const initValues = {
 
 export const App = () => {
   const [page, setPage] = useState<Page>(Page.form);
-  const { fields, touched, errors, props } = useForumu({
+  const { setInput, errors, touched, values, submitHandler } = useFormHandler({
+    initValues,
+  });
+
+  const onSubmit = submitHandler(() => {
+    setPage(Page.completed);
+  });
+  /*  const { fields, touched, errors, props } = useForumu({
     initValues,
     onSubmit: () => setPage(Page.completed),
     validator: ({ agree, username, password, email }, errors) => {
@@ -46,7 +53,7 @@ export const App = () => {
       }
       !agree && (errors.agree = "You need to accept before continue");
     },
-  });
+  }); */
 
   return (
     <main className=" bg-slate-100 h-screen w-full px-3 py-16">
@@ -54,47 +61,67 @@ export const App = () => {
         <section className="container mx-auto max-w-xs">
           <h1 className="text-2xl text-center">Forumu Example</h1>
           <p className="mt-1 mb-16 text-center">Test of library</p>
-          <form className="flex flex-col gap-4" {...props.form}>
+          <form className="flex flex-col gap-4" onSubmit={onSubmit}>
             <Input label="Partner" name="partner" value="Seudosan" readOnly tabIndex={-1} />
             <Input
               isDangerous={!!(errors.username && touched.username)}
               label="Username"
-              name="username"
-              autoComplete="username"
               helper={touched.username && errors.username}
-              value={fields.username}
-              {...props.input}
+              {...setInput("username", { autoComplete: "username" })}
             />
             <Input
               isDangerous={!!(errors.email && touched.email)}
               label="Email"
               name="email"
-              autoComplete="email"
               helper={touched.email && errors.email}
-              value={fields.email}
-              {...props.input}
+              {...setInput("email", { autoComplete: "email" })}
             />
             <Input
               isDangerous={!!(errors.password && touched.password)}
               label="Password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
               helper={touched.password && errors.password}
-              value={fields.password}
-              {...props.input}
+              {...setInput("password", {
+                autoComplete: "new-password",
+              })}
             />
             <label htmlFor="agree">
-              <input type="checkbox" name="agree" id="agree" checked={fields.agree} {...props.input} /> I'm agree
+              <input
+                {...setInput("agree", {
+                  type: "checkbox",
+                  name: "agree",
+                  id: "agree",
+                })}
+              />
+              I'm agree
               <span className="mt-1 block text-red-500">{errors.agree}</span>
             </label>
             <div className="flex space-x-4">
               <label>
-                <input type="radio" name="gender" value="male" checked={fields.gender === "male"} {...props.input} /> Male
+                <input
+                  {...setInput("gender", {
+                    value: "male",
+                    type: "radio",
+                  })}
+                />{" "}
+                Male
               </label>
               <label>
-                <input type="radio" name="gender" value="female" checked={fields.gender === "female"} {...props.input} /> Female
+                <input
+                  {...setInput("gender", {
+                    value: "female",
+                    type: "radio",
+                  })}
+                />{" "}
+                Female
               </label>
+            </div>
+            <Input label="Country" name="country" list="dwarf-country" multiple />
+            <div>
+              <datalist id="dwarf-country" onChange={console.log}>
+                <option value="argentina">Argentina</option>
+                <option value="brazil">Brazil</option>
+                <option value="united-states">United States</option>
+              </datalist>
             </div>
             <button type="submit" className="mt-4 bg-violet-600 p-2.5 text-slate-50 font-medium rounded-md">
               Submit
@@ -110,16 +137,16 @@ export const App = () => {
           <h2 className="text-xl text-center">Your values</h2>
           <div className="mt-4">
             <p className="flex justify-between gap-3">
-              <span>Username:</span> <span>{fields.username}</span>
+              <span>Username:</span> <span>{values.username}</span>
             </p>
             <p className="flex justify-between gap-3">
-              <span>Genre:</span> <span>{fields.gender}</span>
+              <span>Genre:</span> <span>{values.gender}</span>
             </p>
             <p className="flex justify-between gap-3">
-              <span>Email:</span> <span>{fields.email}</span>
+              <span>Email:</span> <span>{values.email}</span>
             </p>
             <p className="flex justify-between gap-3">
-              <span>Password:</span> <span>{[...fields.password].map(() => "*")}</span>
+              <span>Password:</span> <span>{[...values.password].map(() => "*")}</span>
             </p>
           </div>
           <button

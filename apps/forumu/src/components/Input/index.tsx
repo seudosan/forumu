@@ -4,7 +4,7 @@ import { InputHTMLAttributes, ReactNode } from "react";
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: ReactNode;
   helper?: ReactNode;
-  name: string;
+  name?: string;
   isDangerous?: boolean;
 }
 
@@ -29,7 +29,7 @@ export const Input = ({ label, name, helper, isDangerous, ...restProps }: Props)
   return (
     <label htmlFor={name} className={_labelClasses}>
       {label}
-      <input name={name} id={name} type="text" className={_inputClasses} {...restProps} />
+      <input name={name} type="text" className={_inputClasses} {...restProps} />
       {helper && <p className={_helperClasses}>{helper}</p>}
     </label>
   );
