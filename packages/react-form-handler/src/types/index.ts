@@ -1,13 +1,21 @@
 import { InputHTMLAttributes, FormEventHandler, FormEvent } from "react";
 
 export namespace FormHandler {
+  type DotPrefix<T extends string> = T extends "" ? "" : `.${T}`;
+
+  type DotNestedKeys<T> = (
+    T extends object ? { [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}` }[Exclude<keyof T, symbol>] : ""
+  ) extends infer D
+    ? Extract<D, string>
+    : never;
+
   export type SubmitHandler<T> = (callback: (values: T, event: FormEvent<HTMLFormElement>) => void) => FormEventHandler<HTMLFormElement>;
   type ValidatorCallback = (value: unknown) => string | void;
   export type Errors<T> = Readonly<{
-    [Property in keyof T]?: string;
+    [K in Exclude<keyof T, symbol>]?: T[K] extends object ? Errors<T[K]> : string;
   }>;
   export type Touched<T> = Readonly<{
-    [Property in keyof T]?: boolean;
+    [K in Exclude<keyof T, symbol>]?: T[K] extends object ? Errors<T[K]> : boolean;
   }>;
 
   export type Validator = Array<RegExpValidator | ValidatorCallback> | RegExpValidator | ValidatorCallback;
@@ -36,9 +44,9 @@ export namespace FormHandler {
   export type DefaultValues = {
     [x: string]: unknown;
   };
-  export type SetInput<T = DefaultValues> = (name: keyof T, config?: SetInputConfig) => InputHTMLAttributes<HTMLInputElement>;
+  export type SetInput<T = DefaultValues> = (name: DotNestedKeys<T>, config?: SetInputConfig) => InputHTMLAttributes<HTMLInputElement>;
 
-  export type SetValue<T = DefaultValues> = (name: keyof T, value: unknown, config?: SetValueConfig) => void;
+  export type SetValue<T = DefaultValues> = (name: DotNestedKeys<T>, value: unknown, config?: SetValueConfig) => void;
 
   export interface Config<T> {
     initValues?: T;

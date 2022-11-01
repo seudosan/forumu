@@ -1,5 +1,5 @@
 import { useFormHandler } from "@sutiles/react-form-handler";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../Input";
 
 enum Page {
@@ -7,24 +7,64 @@ enum Page {
   completed = "completed",
 }
 
-const initValues = {
-  username: "",
-  email: "",
-  password: "",
-  gender: "male",
-  agree: false,
-  country: "",
+type User = {
+  user: {
+    username: string;
+    email: string;
+    password: string;
+  };
+  country: string;
+  gender: string;
+  agree: boolean;
 };
 
 export const App = () => {
   const [page, setPage] = useState<Page>(Page.form);
+  const [userData, setUserData] = useState<User>();
   const { setInput, errors, touched, values, submitHandler } = useFormHandler({
-    initValues,
+    initValues: userData,
+    common: {
+      filter: new RegExp("^[A-Za-z]*$"),
+    },
   });
 
   const onSubmit = submitHandler(() => {
     setPage(Page.completed);
   });
+
+  useEffect(() => {
+    /* setTimeout(() => {
+      setValue("username", "My");
+    }, 1000); */
+    setTimeout(() => {
+      setUserData({
+        user: {
+          username: "Rodrx",
+          email: "rdrx@gmail.com",
+          password: "1234",
+        },
+        country: "argentina",
+        gender: "male",
+        agree: true,
+      });
+
+      setTimeout(() => {
+        setUserData({
+          user: {
+            username: "Jnx",
+            email: "juannx@gmail.com",
+            password: "1234",
+          },
+          country: "argentina",
+          gender: "male",
+          agree: true,
+        });
+      }, 5000);
+    }, 5000);
+  }, []);
+
+  console.log(values);
+  /* console.info(userData, values, "VALUES"); */
   /*  const { fields, touched, errors, props } = useForumu({
     initValues,
     onSubmit: () => setPage(Page.completed),
@@ -55,6 +95,8 @@ export const App = () => {
     },
   }); */
 
+  errors.user;
+
   return (
     <main className=" bg-slate-100 h-screen w-full px-3 py-16">
       {page === Page.form && (
@@ -64,23 +106,23 @@ export const App = () => {
           <form className="flex flex-col gap-4" onSubmit={onSubmit}>
             <Input label="Partner" name="partner" value="Seudosan" readOnly tabIndex={-1} />
             <Input
-              isDangerous={!!(errors.username && touched.username)}
+              isDangerous={!!(errors.user?.username && touched.user?.username)}
               label="Username"
-              helper={touched.username && errors.username}
-              {...setInput("username", { autoComplete: "username" })}
+              helper={touched.user?.username && errors.user?.username}
+              {...setInput("user.username", { autoComplete: "username" })}
             />
             <Input
-              isDangerous={!!(errors.email && touched.email)}
+              isDangerous={!!(errors.user?.email && touched.user?.email)}
               label="Email"
               name="email"
-              helper={touched.email && errors.email}
-              {...setInput("email", { autoComplete: "email" })}
+              helper={touched.user?.email && errors.user?.email}
+              {...setInput("user.email", { autoComplete: "email" })}
             />
             <Input
-              isDangerous={!!(errors.password && touched.password)}
+              isDangerous={!!(errors.user?.password && touched.user?.password)}
               label="Password"
-              helper={touched.password && errors.password}
-              {...setInput("password", {
+              helper={touched.user?.password && errors.user?.password}
+              {...setInput("user.username", {
                 autoComplete: "new-password",
               })}
             />
@@ -137,17 +179,15 @@ export const App = () => {
           <h2 className="text-xl text-center">Your values</h2>
           <div className="mt-4">
             <p className="flex justify-between gap-3">
-              <span>Username:</span> <span>{values.username}</span>
+              <span>Username:</span> <span>{values.user.username}</span>
             </p>
             <p className="flex justify-between gap-3">
               <span>Genre:</span> <span>{values.gender}</span>
             </p>
             <p className="flex justify-between gap-3">
-              <span>Email:</span> <span>{values.email}</span>
+              <span>Email:</span> <span>{values.user.email}</span>
             </p>
-            <p className="flex justify-between gap-3">
-              <span>Password:</span> <span>{[...values.password].map(() => "*")}</span>
-            </p>
+            <p className="flex justify-between gap-3"></p>
           </div>
           <button
             className="text-violet-600 font-medium hover:underline"
